@@ -67,35 +67,28 @@ function initBookingsLoading() {
     }
 }
 
-// Load data from JSON
-fetch('hotel-data.json')
-    .then(response => response.json())
-    .then(data => {
-        roomsData = data.rooms;
-        hallsData = data.halls;
-        initBookingsLoading();
-        renderRooms();
-        renderHalls();
-        renderBookingHistory();
-    })
-    .catch(error => {
-        console.error('Error loading data:', error);
-        // Fallback data if JSON fails
-        roomsData = [
-            { id: 'r1', name: 'Deluxe Single Room', price: 2500, capacity: 2, features: ['King Bed', 'AC', 'WiFi', 'TV'] },
-            { id: 'r2', name: 'Executive Double Room', price: 4000, capacity: 4, features: ['2 Queen Beds', 'AC', 'WiFi', 'Mini Bar'] },
-            { id: 'r3', name: 'Presidential Suite', price: 8000, capacity: 6, features: ['Master Bedroom', 'Living Room', 'Jacuzzi', 'Butler Service'] }
-        ];
-        hallsData = [
-            { id: 'h1', name: 'Conference Hall', price: 15000, capacity: 100, features: ['Projector', 'Sound System', 'AC', 'WiFi'] },
-            { id: 'h2', name: 'Banquet Hall', price: 30000, capacity: 300, features: ['Stage', 'Catering', 'Decorations', 'Parking'] },
-            { id: 'h3', name: 'Party Hall', price: 20000, capacity: 150, features: ['DJ Setup', 'Dance Floor', 'Bar', 'Lighting'] }
-        ];
-        initBookingsLoading();
-        renderRooms();
-        renderHalls();
-        renderBookingHistory();
-    });
+// Hotel data - embedded directly to work without web server
+const hotelData = {
+  "rooms": [
+    { "id": "r1", "number": "101", "name": "Deluxe Single Room", "price": 2500, "capacity": 2, "image": "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80", "description": "Cozy retreat with king bed, perfect for solo travelers seeking comfort.", "features": ["King Bed", "AC", "WiFi", "TV", "Room Service"] },
+    { "id": "r2", "number": "102", "name": "Executive Double Room", "price": 4000, "capacity": 4, "image": "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800&q=80", "description": "Spacious room with two queen beds, ideal for families or business travelers.", "features": ["2 Queen Beds", "AC", "WiFi", "Mini Bar", "Balcony"] },
+    { "id": "r3", "number": "201", "name": "Presidential Suite", "price": 8000, "capacity": 6, "image": "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&q=80", "description": "Ultimate luxury with master bedroom, living room, and stunning city views.", "features": ["Master Bedroom", "Living Room", "Jacuzzi", "Butler Service", "City View"] },
+    { "id": "r4", "number": "202", "name": "Family Suite", "price": 6000, "capacity": 5, "image": "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=800&q=80", "description": "Home away from home with two bedrooms, kitchen, and kids play area.", "features": ["2 Bedrooms", "Kitchen", "AC", "WiFi", "Kids Play Area"] }
+  ],
+  "halls": [
+    { "id": "h1", "number": "A1", "name": "Conference Hall", "price": 15000, "capacity": 100, "image": "https://images.unsplash.com/photo-1596522354195-e84ae3c98731?w=800&q=80", "description": "Professional meeting space with advanced audiovisual equipment.", "features": ["Projector", "Sound System", "AC", "WiFi", "Whiteboard"] },
+    { "id": "h2", "number": "B1", "name": "Banquet Hall", "price": 30000, "capacity": 300, "image": "https://media.weddingz.in/images/b93a141a3415c69778df991d25081c46/top-10-banquet-halls-in-delhi.jpg", "description": "Elegant venue for weddings and large celebrations with catering support.", "features": ["Stage", "Catering Service", "Decorations", "Parking", "Valet Service"] },
+    { "id": "h3", "number": "C1", "name": "Party Hall", "price": 20000, "capacity": 150, "image": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80", "description": "High-energy party space with DJ setup and vibrant lighting.", "features": ["DJ Floor", "Bar Setup", "Dance Counter", "LED Lighting", "Lounge Area"] }
+  ]
+};
+
+// Load data from embedded data (works without web server)
+roomsData = hotelData.rooms;
+hallsData = hotelData.halls;
+initBookingsLoading();
+renderRooms();
+renderHalls();
+renderBookingHistory();
 
 // Get current logged-in user's email
 function getCurrentUserEmail() {
