@@ -812,6 +812,60 @@ h1, h2, h3, h4, h5, h6 {
         flex-direction: column;
         align-items: flex-start;
     }
+
+    /* Mobile responsive for booking cards */
+    .booking-card {
+        padding: 1rem;
+    }
+
+    .booking-title {
+        font-size: 1.25rem;
+    }
+
+    .booking-details {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .detail-item {
+        align-items: flex-start;
+    }
+
+    .booking-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .booking-total {
+        font-size: 1.25rem;
+        text-align: center;
+    }
+
+    .booking-footer div {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .booking-footer .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    /* Modal mobile fixes */
+    .modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Error variant for toast */
