@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Plaza Hotel - Luxury Accommodation</title>
+    <link rel="stylesheet" href="hotel-style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- HTML2PDF Library for PDF Receipt Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- jsPDF Library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Removed Google Sign-In script; using local login/register modal -->
+
+    <style>
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: #0a0e13; z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+        #preloader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-content img { width: 280px; margin-bottom: 30px; animation: logoPulse 2s infinite ease-in-out; }
+        .loader-ring {
+            width: 50px; height: 50px; margin: 0 auto;
+            border: 4px solid rgba(212, 175, 55, 0.2); border-top: 4px solid #D4AF37;
+            border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        .welcome-text { animation: fadeInUp 1s ease-out; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes logoPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.85; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-content" style="text-align: center;">
+            <img src="Hotel Grand Plaza Logo.png" alt="Grand Plaza Loading">
+            <div class="loader-ring"></div>
+            <h2 class="welcome-text" style="color: #D4AF37; margin-top: 25px; font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; letter-spacing: 1px;">
+                Welcome To Hotel Grand Plaza
+            </h2>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="Hotel Grand Plaza Logo.png" alt="Hotel Grand Plaza" style="height: 60px; object-fit: contain;">
+                <span>Hotel Grand Plaza</span>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#rooms" class="nav-link">Rooms</a></li>
+                <li><a href="#halls" class="nav-link">Halls</a></li>
+                <li><a href="#history" class="nav-link">My Bookings</a></li>
+            </ul>
+
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div id="auth-section">
+                    <button class="btn btn-outline btn-sm" id="login-btn">Login</button>
+                    <button class="btn btn-primary btn-sm" id="register-btn">Register</button>
+                </div>
+
+                <div id="user-profile" style="display: none; align-items: center; gap: 10px; color: white;">
+                    <img id="user-pic" src="" alt="Profile" style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #D4AF37; object-fit: cover;">
+                    <span id="user-name" style="font-weight: 600; font-size: 14px; font-family: 'Inter', sans-serif;"></span>
+                    <button onclick="handleLogout()" style="background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 16px; margin-left: 5px;" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Experience Luxury Like Never Before</h1>
+            <p class="hero-subtitle">Your comfort is our priority. Book your perfect stay today.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollToSection('rooms')"><i class="fas fa-bed"></i> Book a Room</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('halls')"><i class="fas fa-users"></i> Book a Hall</button>
+            </div>
+        </div>
+        <div class="scroll-indicator"><i class="fas fa-chevron-down"></i></div>
+    </section>
+
+    <section id="rooms" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Premium Rooms</h2>
+                <div class="rooms-grid" id="rooms-grid"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="halls" class="section section-alt">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Event Halls</h2>
+                <div class="halls-grid" id="halls-grid"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="history" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">My Bookings</h2>
+                <div class="booking-history" id="booking-history"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal" id="booking-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeBookingModal()"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title" id="modal-title">Book</h2>
+            <form id="booking-form">
+                <input type="hidden" id="booking-type" name="type">
+                <input type="hidden" id="booking-item-id" name="itemId">
+                <input type="hidden" id="booking-item-name" name="itemName">
+                <input type="hidden" id="booking-price" name="price">
+                <div class="form-group"><label>Full Name</label><input type="text" id="customer-name" name="customerName" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="customer-email" name="customerEmail" required></div>
+                <div class="form-group"><label>Phone</label><input type="tel" id="customer-phone" name="customerPhone" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Check-in</label><input type="date" id="check-in" name="checkIn" required></div>
+                    <div class="form-group"><label>Check-out</label><input type="date" id="check-out" name="checkOut" required></div>
+                </div>
+                <div class="form-group" id="guests-group"><label for="guests">Guests</label><input type="number" id="guests" name="guests" min="1" value="2" required></div>
+                <div class="form-group" id="time-group" style="display: none;"><label>Event Time</label><input type="time" id="event-time" name="eventTime"></div>
+                <div class="price-summary"><div class="price-row"><span>Total:</span><span class="price-amount" id="total-price">₹0</span></div></div>
+                <button type="submit" class="btn btn-primary btn-full">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLoginModal()"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title">Login</h2>
+            <form id="login-form">
+                <div class="form-group"><label>Email</label><input type="email" id="login-email" name="email" required></div>
+                <div class="form-group"><label>Password</label><input type="password" id="login-password" name="password" required></div>
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeRegisterModal()"><i class="fas fa-times"></i></button>
+            <h2 class="modal-title">Register</h2>
+            <form id="register-form">
+                <div class="form-group"><label>Full Name</label><input type="text" id="register-name" name="name" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="register-email" name="email" required></div>
+                <div class="form-group"><label>Password</label><input type="password" id="register-password" name="password" required></div>
+                <div class="form-group"><label>Confirm Password</label><input type="password" id="register-password-confirm" name="passwordConfirm" required></div>
+                <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-message"></span></div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-hotel"></i> Grand Plaza Hotel</h3>
+                    <p>Experience luxury and comfort in the heart of the city. Book your stay with us today.</p>
+                    <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+                        <a href="#" style="color:var(--text-secondary);"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" style="color:var(--text-secondary);"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="color:var(--text-secondary);"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#rooms">Rooms</a></li>
+                        <li><a href="#halls">Halls</a></li>
+                        <li><a href="#history">My Bookings</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Hotel Grand Plaza,Ahmedabad</p>
+                    <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                    <p><i class="fas fa-envelope"></i> hotelgrandplaza@gmail.com</p>
+                </div>
+            </div>
+ 
+            <div class="footer-bottom">
+                <p>&copy; 2026 Grand Plaza Hotel. All rights reserved. | Diploma Project By Patel Tirth</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase Module Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+        import { getDatabase, ref, set, get, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyALFXaA521YaigaJ9J2Vx270nkvbctgyzI",
+            authDomain: "hotel-grand-plaza-db.firebaseapp.com",
+            databaseURL: "https://hotel-grand-plaza-db-default-rtdb.firebaseio.com",
+            projectId: "hotel-grand-plaza-db",
+            storageBucket: "hotel-grand-plaza-db.firebasestorage.app",
+            messagingSenderId: "318765519849",
+            appId: "1:318765519849:web:6675205f6e49a4228fb178",
+            measurementId: "G-S3LF56444M"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        // Initialize Firebase services
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Make Firebase services available globally
+        window.firebaseServices = {
+            database,
+            ref,
+            set,
+            get,
+            push,
+            onValue,
+            update,
+            remove,
+            auth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        };
+
+        console.log('Firebase initialized successfully on hotel website!');
+        
+        // Dispatch event when Firebase is ready
+        window.dispatchEvent(new Event('firebaseReady'));
+    </script>
+
+    <script src="hotel-script.js"></script>
+    <script>
+        window.addEventListener("load", function() {
+            if (!sessionStorage.getItem('mainWebsiteAnimationPlayed')) {
+                setTimeout(function() {
+                    document.getElementById("preloader").classList.add("hidden");
+                    sessionStorage.setItem('mainWebsiteAnimationPlayed', 'true');
+                }, 2500); 
+            } else {
+                document.getElementById("preloader").style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
