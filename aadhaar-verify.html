@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aadhaar Verification - Hotel Grand Plaza</title>
+    <link rel="stylesheet" href="hotel-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --aadhaar-orange: #FF6F00;
+            --aadhaar-orange-light: #FF8F00;
+            --aadhaar-orange-dark: #E65100;
+            --aadhaar-white: #FFFFFF;
+            --aadhaar-cream: #FFF8E1;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --success: #4CAF50;
+            --error: #F44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--aadhaar-orange) 0%, var(--aadhaar-orange-light) 50%, var(--aadhaar-orange) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .aadhaar-container {
+            background: var(--aadhaar-white);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 480px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .aadhaar-header {
+            background: linear-gradient(135deg, var(--aadhaar-orange) 0%, var(--aadhaar-orange-dark) 100%);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .aadhaar-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: var(--aadhaar-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .aadhaar-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .aadhaar-header h1 {
+            color: var(--aadhaar-white);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .aadhaar-header p {
+            color: var(--aadhaar-cream);
+            font-size: 14px;
+        }
+
+        .aadhaar-body {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--aadhaar-orange);
+            box-shadow: 0 0 0 4px rgba(255, 111, 0, 0.1);
+        }
+
+        .form-group input::placeholder {
+            letter-spacing: normal;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .btn-aadhaar {
+            width: 100%;
+            padding: 16px 30px;
+            background: linear-gradient(135deg, var(--aadhaar-orange) 0%, var(--aadhaar-orange-dark) 100%);
+            color: var(--aadhaar-white);
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-aadhaar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 111, 0, 0.3);
+        }
+
+        .btn-aadhaar:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-aadhaar.btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #388E3C 100%);
+        }
+
+        .btn-aadhaar.btn-success:hover {
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+        }
+
+        .otp-group {
+            display: none;
+        }
+
+        .otp-group.active {
+            display: block;
+        }
+
+        .timer-text {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .timer-text span {
+            color: var(--aadhaar-orange);
+            font-weight: 600;
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: var(--aadhaar-orange);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            font-size: 14px;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .resend-btn.active {
+            display: block;
+        }
+
+        .resend-btn:disabled {
+            color: #999;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        .message.success {
+            background: #E8F5E9;
+            color: var(--success);
+            border: 1px solid #C8E6C9;
+        }
+
+        .message.error {
+            background: #FFEBEE;
+            color: var(--error);
+            border: 1px solid #FFCDD2;
+        }
+
+        .message.info {
+            background: var(--aadhaar-cream);
+            color: var(--aadhaar-orange-dark);
+            border: 1px solid #FFE0B2;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .back-link a:hover {
+            color: var(--aadhaar-orange);
+        }
+
+        .verified-badge {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .verified-badge i {
+            font-size: 60px;
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+
+        .verified-badge h2 {
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+
+        .verified-badge p {
+            color: var(--text-light);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="aadhaar-container">
+        <div class="aadhaar-header">
+            <div class="aadhaar-logo">
+                <img src="https://cdn.iconscout.com/icon/free/png-512/free-aadhaar-logo-icon-svg-download-png-1747945.png?f=webp&w=512" alt="Aadhaar Logo">
+            </div>
+            <h1>Aadhaar Verification</h1>
+            <p>Verify your identity using Aadhaar</p>
+        </div>
+
+        <div class="aadhaar-body">
+            <!-- Success Message (shown after verification) -->
+            <div id="verified-success" class="verified-badge hidden">
+                <i class="fas fa-check-circle"></i>
+                <h2>Aadhaar Verified!</h2>
+                <p>Your Aadhaar has been verified successfully.</p>
+                <p style="margin-top: 10px; font-size: 12px; color: #666;">You can close this window and continue with your booking.</p>
+            </div>
+
+            <!-- Verification Form -->
+            <div id="verification-form">
+                <!-- Message Display -->
+                <div id="message" class="message"></div>
+
+                <!-- Aadhaar Number Input -->
+                <div class="form-group" id="aadhaar-number-group">
+                    <label for="aadhaar-number">Enter Your 12-Digit Aadhaar Number</label>
+                    <input type="text" id="aadhaar-number" placeholder="XXXX XXXX XXXX" maxlength="12" autocomplete="off">
+                </div>
+
+                <!-- OTP Input (hidden initially) -->
+                <div class="form-group otp-group" id="otp-group">
+                    <label for="aadhaar-otp">Enter OTP Sent to Your Registered Mobile</label>
+                    <input type="text" id="aadhaar-otp" placeholder="XXXXXX" maxlength="6" autocomplete="off">
+                </div>
+
+                <!-- Send OTP Button -->
+                <button type="button" id="send-otp-btn" class="btn-aadhaar" onclick="sendOTP()">
+                    <i class="fas fa-paper-plane"></i> Send OTP
+                </button>
+
+                <!-- Verify OTP Button (hidden initially) -->
+                <button type="button" id="verify-otp-btn" class="btn-aadhaar btn-success hidden" onclick="verifyOTP()">
+                    <i class="fas fa-check-circle"></i> Verify OTP
+                </button>
+
+                <!-- Timer and Resend -->
+                <div class="timer-text" id="timer-text" style="display: none;">
+                    OTP sent! Resend available in <span id="countdown">60</span> seconds
+                </div>
+                
+                <div style="text-align: center;">
+                    <button type="button" id="resend-btn" class="resend-btn" onclick="resendOTP()">
+                        Resend OTP
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================
+        // 2FACTOR.IN OTP CONFIGURATION
+        // =========================================
+        const TWO_FACTOR_API_KEY = 'a5edc6be-16e6-11f1-bcb0-0200cd936042';
+        const SMS_TEMPLATE = 'HOTEL_OTP';
+
+        // Store session ID for OTP verification
+        let aadhaarOtpSession = {
+            sessionId: null,
+            aadhaarNumber: null,
+            timestamp: null
+        };
+
+        // Get mobile number from URL parameter
+        function getMobileFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mobile = urlParams.get('mobile');
+            if (mobile && mobile.length === 10) {
+                return '+91' + mobile;
+            }
+            return null;
+        }
+
+        // Aadhaar verification state
+        let aadhaarVerified = false;
+        let aadhaarNumber = '';
+        let countdownInterval = null;
+        let countdown = 60;
+        let resendTimer = null;
+
+        // Show message function
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = 'message active ' + type;
+        }
+
+        // Hide message function
+        function hideMessage() {
+            const messageEl = document.getElementById('message');
+            messageEl.className = 'message';
+        }
+
+        // Validate Aadhaar number (12 digits)
+        function validateAadhaarNumber(aadhaar) {
+            return /^\d{12}$/.test(aadhaar);
+        }
+
+        // Helper function to send OTP via 2factor.in API
+        async function sendAadhaarOTP(phoneNumber) {
+            try {
+                const response = await fetch(`https://2factor.in/API/V1/${TWO_FACTOR_API_KEY}/SMS/${phoneNumber}/AUTOGEN/${SMS_TEMPLATE}`);
+                const data = await response.json();
+                console.log('2Factor Aadhaar SMS API Response:', data);
+                return data;
+            } catch (error) {
+                console.error('Error sending Aadhaar SMS OTP:', error);
+                throw error;
+            }
+        }
+
+        // Helper function to verify OTP via 2factor.in API
+        async function verifyAadhaarOTP(sessionId, otp) {
+            try {
+                const response = await fetch(`https://2factor.in/API/V1/${TWO_FACTOR_API_KEY}/SMS/VERIFY/${sessionId}/${otp}`);
+                const data = await response.json();
+                console.log('2Factor Aadhaar Verify Response:', data);
+                return data;
+            } catch (error) {
+                console.error('Error verifying Aadhaar OTP:', error);
+                throw error;
+            }
+        }
+
+        // Send OTP function - Using real 2factor.in API
+        async function sendOTP() {
+            const aadhaarInput = document.getElementById('aadhaar-number');
+            const aadhaar = aadhaarInput.value.replace(/\s/g, '');
+            const sendBtn = document.getElementById('send-otp-btn');
+
+            // Validate Aadhaar number
+            if (!validateAadhaarNumber(aadhaar)) {
+                showMessage('Please enter a valid 12-digit Aadhaar number', 'error');
+                return;
+            }
+
+            // Store Aadhaar number
+            aadhaarNumber = aadhaar;
+
+            // Get mobile number from URL parameter
+            const phoneNumber = getMobileFromURL();
+
+            if (!phoneNumber) {
+                showMessage('Mobile number not found. Please open this page from the booking form.', 'error');
+                return;
+            }
+
+            // Show loading state
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Sending OTP...';
+
+            hideMessage();
+
+            try {
+                // Call 2factor.in API to send OTP via SMS
+                const data = await sendAadhaarOTP(phoneNumber);
+                
+                console.log('2Factor API Response:', data);
+                
+                if (data.Status === 'Success') {
+                    // Store session ID for verification
+                    aadhaarOtpSession = {
+                        sessionId: data.Details,
+                        aadhaarNumber: aadhaar,
+                        timestamp: Date.now()
+                    };
+
+                    // Show OTP input field
+                    document.getElementById('otp-group').classList.add('active');
+                    document.getElementById('aadhaar-number').readOnly = true;
+                    
+                    // Hide send button, show verify button
+                    sendBtn.classList.add('hidden');
+                    document.getElementById('verify-otp-btn').classList.remove('hidden');
+
+                    // Focus on OTP input
+                    document.getElementById('aadhaar-otp').focus();
+
+                    // Show success message
+                    showMessage('OTP has been sent to your registered mobile number: ' + phoneNumber, 'info');
+
+                    // Start countdown timer
+                    startCountdown();
+                } else {
+                    throw new Error(data.Details || 'Failed to send OTP');
+                }
+
+            } catch (error) {
+                // Show error
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
+                showMessage('Failed to send OTP: ' + error.message, 'error');
+            }
+        }
+
+        // Verify OTP function - Using real 2factor.in API
+        async function verifyOTP() {
+            const otpInput = document.getElementById('aadhaar-otp');
+            const otp = otpInput.value.trim();
+            const verifyBtn = document.getElementById('verify-otp-btn');
+
+            // Validate OTP
+            if (!otp || otp.length !== 6) {
+                showMessage('Please enter a valid 6-digit OTP', 'error');
+                return;
+            }
+
+            // Check if session exists
+            if (!aadhaarOtpSession.sessionId) {
+                showMessage('OTP session expired. Please request a new OTP.', 'error');
+                return;
+            }
+
+            // Show loading state
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="fas fa-spinner spinner"></i> Verifying...';
+
+            hideMessage();
+
+            try {
+                // Call 2factor.in API to verify OTP
+                const data = await verifyAadhaarOTP(aadhaarOtpSession.sessionId, otp);
+
+                if (data.Status === 'Success') {
+                    // Mark as verified
+                    aadhaarVerified = true;
+
+                    // Store verification in sessionStorage for main website to access
+                    sessionStorage.setItem('aadhaarVerified', 'true');
+                    sessionStorage.setItem('aadhaarNumber', aadhaarNumber);
+                    sessionStorage.setItem('aadhaarVerifiedAt', new Date().toISOString());
+
+                    // Show success state
+                    document.getElementById('verification-form').classList.add('hidden');
+                    document.getElementById('verified-success').classList.remove('hidden');
+
+                    // Send message to parent window (main website)
+                    if (window.opener) {
+                        window.opener.postMessage({
+                            type: 'aadhaarVerified',
+                            aadhaarNumber: aadhaarNumber
+                        }, '*');
+                    }
+
+                    showMessage('Aadhaar verified successfully!', 'success');
+                } else {
+                    throw new Error(data.Details || 'Invalid OTP');
+                }
+
+            } catch (error) {
+                // Show error
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify OTP';
+                showMessage('Invalid OTP. Please enter the correct OTP.', 'error');
+            }
+        }
+
+        // Resend OTP function - Using real 2factor.in API
+        async function resendOTP() {
+            const resendBtn = document.getElementById('resend-btn');
+            
+            // Get mobile number from URL parameter
+            const phoneNumber = getMobileFromURL();
+
+            if (!phoneNumber) {
+                showMessage('Mobile number not found. Please open this page from the booking form.', 'error');
+                return;
+            }
+            
+            resendBtn.disabled = true;
+            resendBtn.textContent = 'Sending...';
+
+            try {
+                // Call 2factor.in API to resend OTP
+                const data = await sendAadhaarOTP(phoneNumber);
+                
+                console.log('2Factor Resend API Response:', data);
+
+                if (data.Status === 'Success') {
+                    // Update session ID
+                    aadhaarOtpSession = {
+                        sessionId: data.Details,
+                        aadhaarNumber: aadhaarNumber,
+                        timestamp: Date.now()
+                    };
+
+                    // Restart countdown
+                    countdown = 60;
+                    startCountdown();
+
+                    resendBtn.textContent = 'Resend OTP';
+                    showMessage('OTP has been resent to your registered mobile number', 'info');
+                } else {
+                    throw new Error(data.Details || 'Failed to resend OTP');
+                }
+
+            } catch (error) {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Resend OTP';
+                showMessage('Failed to resend OTP: ' + error.message, 'error');
+            }
+        }
+
+        // Countdown timer
+        function startCountdown() {
+            const timerText = document.getElementById('timer-text');
+            const countdownEl = document.getElementById('countdown');
+            const resendBtn = document.getElementById('resend-btn');
+
+            timerText.style.display = 'block';
+            countdownEl.textContent = countdown;
+            resendBtn.classList.remove('active');
+
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(() => {
+                countdown--;
+                countdownEl.textContent = countdown;
+
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    timerText.style.display = 'none';
+                    resendBtn.classList.add('active');
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Format Aadhaar number as user types
+        document.getElementById('aadhaar-number').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+        });
+
+        // Allow only numbers in OTP field
+        document.getElementById('aadhaar-otp').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Handle Enter key
+        document.getElementById('aadhaar-number').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendOTP();
+            }
+        });
+
+        document.getElementById('aadhaar-otp').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyOTP();
+            }
+        });
+    </script>
+</body>
+</html>
+
